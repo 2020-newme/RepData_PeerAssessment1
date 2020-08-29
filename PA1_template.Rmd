@@ -78,7 +78,16 @@ So, we see that the it was most frequent to take a little over ten thousand step
 
 ## What is the average daily activity pattern?
 
+```{r}
+interval_means <- activity_cc %>%
+  group_by(interval) %>%
+  summarise(steps = mean(steps))
 
+library(ggplot2)
+ggplot(data = interval_means, aes(x = interval, y = steps)) +
+  geom_line()
+
+```
 
 ## Imputing missing values
 
