@@ -56,10 +56,15 @@ summary(steps_by_date$steps)
 And a histogram can help us visualize it further.
 
 ```{r echo=TRUE}
-hist(steps_by_date$steps, main = "Histogram of Steps Taken per Day", xlab = "total steps")
+hist(
+  steps_by_date$steps,
+  breaks = 10,
+  main = "Histogram of Steps Taken per Day",
+  xlab = "total steps"
+)
 ```
 
-So, we see that the most recurring number of steps in a day was indeed a little a litlle over ten thousand.
+So, we see that the it was most frequent to take a little over ten thousand steps in a day.
 
 ## What is the average daily activity pattern?
 
