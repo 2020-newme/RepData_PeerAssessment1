@@ -5,14 +5,61 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
 
+The first step is loading and pre-processing the data.
 
+```{r echo=TRUE}
+unzip("activity.zip")
+
+library(readr)
+activity <- read_csv(
+  "activity.csv",
+  col_types = cols(
+    date = col_date(format = "%Y-%m-%d"),
+    interval = col_integer(),
+    steps = col_integer()
+  )
+)
+```
+
+As the repository already contains the data file, it's not necessary to download it, but it's zipped, so we first unzip it, and then use the `read_csv` function to load it into the session.
+
+```{r echo=TRUE}
+activity_cc <- activity[complete.cases(activity),]
+```
+
+A dataframe with only the complete cases will be useful to answer some of the questions.
+
+```{r echo=TRUE}
+library(dplyr)
+```
+
+Finally, is also generally handy to have the `dplyr` package loaded.
 
 ## What is mean total number of steps taken per day?
 
+To have a better understanding of the tutal number of steps taken per day, we first group the observations by date and sum the steps in each group.
 
+```{r echo=TRUE}
+steps_by_date <- activity_cc %>%
+  group_by(date) %>%
+  summarise(steps = sum(steps))
+```
+
+Then, the `summary` function can quickly give us some metrics on the resulting `steps` variable, like its mean and median.
+
+```{r echo=TRUE}
+summary(steps_by_date$steps)
+```
+
+And a histogram can help us visualize it further.
+
+```{r echo=TRUE}
+hist(steps_by_date$steps, main = "Histogram of Steps Taken per Day", xlab = "total steps")
+```
+
+So, we see that the most recurring number of steps in a day was indeed a little a litlle over ten thousand.
 
 ## What is the average daily activity pattern?
 
