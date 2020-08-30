@@ -5,21 +5,14 @@ output:
     keep_md: true
 ---
 
-```{r echo = FALSE}
-# change knitr defaults for the file
 
-# Ensure code chunks are included in the output
-knitr::opts_chunk$set(echo = TRUE)
-
-# but not the messages the code may generate
-knitr::opts_chunk$set(message = FALSE)
-```
 
 ## Loading and preprocessing the data
 
 The first step is loading and pre-processing the data.
 
-```{r}
+
+```r
 unzip("activity.zip")
 
 library(readr)
@@ -35,7 +28,8 @@ activity <- read_csv(
 
 As the repository already contains the data file, it's not necessary to download it, but it's zipped, so we first unzip it, and then use the `read_csv` function to load it into the session.
 
-```{r}
+
+```r
 activity_cc <- activity[complete.cases(activity),]
 ```
 
@@ -43,7 +37,8 @@ A dataframe with only the complete cases will be useful to answer some of the qu
 
 Finally, is also generally handy to have the `dplyr` and `ggplot2` packages loaded.
 
-```{r}
+
+```r
 library(dplyr)
 library(ggplot2)
 ```
@@ -52,7 +47,8 @@ library(ggplot2)
 
 To have a better understanding of the tutal number of steps taken per day, we first group the observations by date and sum the steps in each group.
 
-```{r}
+
+```r
 steps_by_date <- activity_cc %>%
   group_by(date) %>%
   summarise(steps = sum(steps))
@@ -60,13 +56,20 @@ steps_by_date <- activity_cc %>%
 
 Then, the `summary` function can quickly give us some metrics on the resulting `steps` variable, like its mean and median.
 
-```{r}
+
+```r
 summary(steps_by_date$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10765   10766   13294   21194
 ```
 
 And a histogram can help us visualize it further.
 
-```{r}
+
+```r
 hist(
   steps_by_date$steps,
   breaks = 10,
@@ -75,11 +78,14 @@ hist(
 )
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-60-1.png)<!-- -->
+
 So, we see that the it was most frequent to take a little over ten thousand steps in a day.
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 interval_means <- activity_cc %>%
   group_by(interval) %>%
   summarise(steps = mean(steps))
@@ -88,9 +94,12 @@ ggplot(data = interval_means, aes(x = interval, y = steps)) +
   geom_line()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-61-1.png)<!-- -->
+
 ## Imputing missing values
 
-```{r}
+
+```r
 activity_na_imputed <-
   activity %>%
   inner_join(interval_means, by = "interval") %>%
@@ -101,7 +110,14 @@ steps_by_date_na_imputed <- activity_na_imputed %>%
   summarise(steps = sum(steps))
 
 summary(steps_by_date_na_imputed$steps)
+```
 
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10766   10766   12811   21194
+```
+
+```r
 hist(
   steps_by_date_na_imputed$steps,
   breaks = 10,
@@ -110,9 +126,12 @@ hist(
 )
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-62-1.png)<!-- -->
+
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 interval_means_weekday <-
   activity_na_imputed %>%
   mutate(weekday = weekdays(date)) %>%
@@ -127,5 +146,6 @@ interval_means_weekday <-
 ggplot(data = interval_means_weekday, aes(x = interval, y = steps, colour = weekday)) +
   geom_line()+
   facet_grid(vars(weekday))
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-63-1.png)<!-- -->
